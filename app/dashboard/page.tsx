@@ -20,6 +20,7 @@ export default function DashboardPage() {
       orientation: details.orientation,
       duration: details.duration,
       quality: details.quality,
+      model: details.model,
     })
     setGeneratingVideoId(details.videoId)
     setError('')

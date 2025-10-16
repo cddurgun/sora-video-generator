@@ -5,6 +5,7 @@ export interface GenerateVideoRequest {
   orientation?: 'landscape' | 'portrait' | 'square'
   duration?: 5 | 10 | 20
   quality?: 'standard' | 'high'
+  model?: 'sora-2' | 'sora-2-pro'
 }
 
 export interface VideoGenerationResponse {
@@ -43,7 +44,7 @@ export class SoraClient {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'sora-2',
+        model: request.model || 'sora-2',
         prompt: request.prompt,
         orientation: request.orientation || 'landscape',
         duration: request.duration || 5,

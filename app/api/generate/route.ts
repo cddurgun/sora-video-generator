@@ -5,7 +5,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
 
-    const { prompt, orientation, duration, quality, apiKey } = body
+    const { prompt, orientation, duration, quality, apiKey, model } = body
 
     // Validate required fields
     if (!prompt || !apiKey) {
@@ -32,6 +32,7 @@ export async function POST(request: NextRequest) {
       orientation: orientation || 'landscape',
       duration: duration || 5,
       quality: quality || 'standard',
+      model: model || 'sora-2',
     })
 
     // Return video ID for polling

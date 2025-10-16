@@ -12,6 +12,7 @@ export interface GeneratedVideoDetails {
   orientation: 'landscape' | 'portrait' | 'square'
   duration: 5 | 10 | 20
   quality: 'standard' | 'high'
+  model: 'sora-2' | 'sora-2-pro'
 }
 
 export interface VideoGeneratorHandle {
@@ -31,6 +32,7 @@ const VideoGenerator = forwardRef<VideoGeneratorHandle, VideoGeneratorProps>(fun
   const [orientation, setOrientation] = useState<'landscape' | 'portrait' | 'square'>('landscape')
   const [duration, setDuration] = useState<5 | 10 | 20>(5)
   const [quality, setQuality] = useState<'standard' | 'high'>('standard')
+  const [model, setModel] = useState<'sora-2' | 'sora-2-pro'>('sora-2')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const formRef = useRef<HTMLFormElement>(null)
@@ -132,6 +134,7 @@ const VideoGenerator = forwardRef<VideoGeneratorHandle, VideoGeneratorProps>(fun
           orientation,
           duration,
           quality,
+          model,
           apiKey,
         }),
       })
@@ -154,6 +157,7 @@ const VideoGenerator = forwardRef<VideoGeneratorHandle, VideoGeneratorProps>(fun
         orientation,
         duration,
         quality,
+        model,
       })
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An error occurred'
@@ -201,6 +205,22 @@ const VideoGenerator = forwardRef<VideoGeneratorHandle, VideoGeneratorProps>(fun
 
         {/* Settings Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Model */}
+          <div>
+            <label htmlFor="model" className="block text-sm font-semibold text-neutral-900 mb-2">
+              Model
+            </label>
+            <select
+              id="model"
+              value={model}
+              onChange={(e) => setModel(e.target.value as any)}
+              className="input-field"
+              disabled={isLoading}
+            >
+              <option value="sora-2">Sora 2</option>
+              <option value="sora-2-pro">Sora 2 Pro</option>
+            </select>
+          </div>
           {/* Orientation */}
           <div>
             <label htmlFor="orientation" className="block text-sm font-semibold text-neutral-900 mb-2">

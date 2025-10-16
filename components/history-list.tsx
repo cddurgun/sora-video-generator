@@ -70,6 +70,11 @@ export default function HistoryList({ limit = 10 }: HistoryListProps) {
           )}
 
           <div className="flex gap-2 text-xs">
+            {record.model && (
+              <span className="px-2 py-1 bg-neutral-100 rounded text-neutral-700">
+                {record.model === 'sora-2-pro' ? 'Pro' : 'Standard'}
+              </span>
+            )}
             {record.orientation && (
               <span className="px-2 py-1 bg-neutral-100 rounded text-neutral-700">
                 {record.orientation}

@@ -9,6 +9,7 @@ export interface GenerationRecord {
   duration?: number
   orientation?: string
   quality?: string
+  model?: 'sora-2' | 'sora-2-pro'
 }
 
 const STORAGE_KEY = 'sora_generations'
