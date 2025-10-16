@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { StorageManager } from '@/lib/storage'
 import { isValidApiKey } from '@/lib/sora-client'
+import TemplateGallery from './template-gallery'
 
 interface VideoGeneratorProps {
   onGenerate?: (videoId: string) => void
@@ -91,6 +92,7 @@ export default function VideoGenerator({
           </label>
           <textarea
             id="prompt"
+            name="prompt"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             placeholder="Describe the video you want to generate. Be creative and specific!"
@@ -135,6 +137,7 @@ export default function VideoGenerator({
             </label>
             <select
               id="duration"
+              name="duration"
               value={duration}
               onChange={(e) => setDuration(Number(e.target.value) as any)}
               className="input-field"
@@ -208,6 +211,40 @@ export default function VideoGenerator({
           </div>
         </div>
       </form>
+    </div>
+  )
+}
+
+// Helper function to add template section
+export function VideoGeneratorWithTemplates({
+  onGenerate,
+  onError,
+}: VideoGeneratorProps) {
+  return (
+    <div className="space-y-8">
+      <div>
+        <VideoGenerator onGenerate={onGenerate} onError={onError} />
+      </div>
+
+      <div className="card p-6">
+        <h3 className="text-lg font-semibold text-slate-900 mb-4">Quick Start Templates</h3>
+        <p className="text-sm text-slate-600 mb-4">Choose from pre-crafted prompts to get started quickly</p>
+        <TemplateGallery
+          onSelectTemplate={(prompt, duration) => {
+            // Get the form element and update it
+            const textarea = document.querySelector('textarea[name="prompt"]') as HTMLTextAreaElement
+            if (textarea) {
+              textarea.value = prompt
+              textarea.focus()
+              // Update duration too if available
+              const durationSelect = document.querySelector('select[name="duration"]') as HTMLSelectElement
+              if (durationSelect && duration) {
+                durationSelect.value = String(duration)
+              }
+            }
+          }}
+        />
+      </div>
     </div>
   )
 }
