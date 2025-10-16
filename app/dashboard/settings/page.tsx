@@ -1,5 +1,6 @@
 import ApiKeyInput from '@/components/api-key-input'
 import ShortcutsHelp from '@/components/shortcuts-help'
+import EnhancedSettings from '@/components/enhanced-settings'
 
 export default function SettingsPage() {
   return (
@@ -13,6 +14,14 @@ export default function SettingsPage() {
       <div className="space-y-8">
         {/* API Key Section */}
         <ApiKeyInput />
+
+        <div className="divider my-8"></div>
+
+        {/* Enhanced Settings */}
+        <div>
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">Preferences</h2>
+          <EnhancedSettings />
+        </div>
 
         <div className="divider my-8"></div>
 
