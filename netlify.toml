@@ -1,0 +1,19 @@
+[build]
+command = "npm run build"
+functions = "netlify/functions"
+publish = ".next"
+
+[build.environment]
+NODE_VERSION = "20"
+NPM_VERSION = "10"
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
+
+# NextAuth.js configuration
+[[redirects]]
+from = "/api/auth/*"
+to = "/.netlify/functions/api"
+status = 200
