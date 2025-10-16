@@ -9,9 +9,9 @@ export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(true)
 
   const navItems = [
-    { href: '/dashboard', label: 'Generate', icon: '🎬' },
-    { href: '/dashboard/history', label: 'History', icon: '📚' },
-    { href: '/dashboard/settings', label: 'Settings', icon: '⚙️' },
+    { href: '/dashboard', label: 'Generate' },
+    { href: '/dashboard/history', label: 'History' },
+    { href: '/dashboard/settings', label: 'Settings' },
   ]
 
   return (
@@ -19,11 +19,11 @@ export default function Sidebar() {
       {/* Mobile toggle button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 left-4 z-50 md:hidden p-2 rounded-lg bg-white border border-gray-200 hover:bg-gray-100"
+        className="fixed top-4 left-4 z-50 md:hidden p-2 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 transition-colors"
         aria-label="Toggle sidebar"
       >
         <svg
-          className="w-6 h-6"
+          className="w-6 h-6 text-slate-700"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -41,53 +41,53 @@ export default function Sidebar() {
       <aside
         className={`${
           isOpen ? 'translate-x-0' : '-translate-x-full'
-        } fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-200 transition-transform duration-200 z-40 md:translate-x-0 md:sticky md:top-0`}
+        } fixed left-0 top-0 h-screen w-64 bg-white border-r border-slate-200 transition-transform duration-200 z-40 md:translate-x-0 md:sticky md:top-0 flex flex-col`}
       >
-        <div className="flex flex-col h-full">
-          {/* Logo */}
-          <div className="flex items-center gap-3 p-6 border-b border-gray-200">
-            <span className="text-3xl">🎬</span>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">Sora 2</h1>
-              <p className="text-xs text-gray-600">Video Generator</p>
-            </div>
+        {/* Header */}
+        <div className="p-6 border-b border-slate-200">
+          <div className="flex items-baseline gap-2">
+            <h1 className="text-2xl font-bold text-slate-900">Sora</h1>
+            <span className="text-sm font-medium text-slate-500">2.0</span>
           </div>
+          <p className="text-sm text-slate-500 mt-1">Video Generation Engine</p>
+        </div>
 
-          {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-2">
-            {navItems.map((item) => {
-              const isActive = pathname === item.href
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                    isActive
-                      ? 'bg-blue-50 text-blue-600 font-medium border-l-4 border-blue-600'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
-                  onClick={() => setIsOpen(false)}
-                >
-                  <span className="text-xl">{item.icon}</span>
-                  <span>{item.label}</span>
-                </Link>
-              )
-            })}
-          </nav>
+        {/* Navigation */}
+        <nav className="flex-1 p-4 space-y-1">
+          {navItems.map((item) => {
+            const isActive = pathname === item.href
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center px-4 py-2.5 rounded-lg font-medium transition-all ${
+                  isActive
+                    ? 'bg-blue-50 text-blue-600 border-l-2 border-blue-600 pl-3.5'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                }`}
+                onClick={() => setIsOpen(false)}
+              >
+                {item.label}
+              </Link>
+            )
+          })}
+        </nav>
 
-          {/* Footer */}
-          <div className="p-4 border-t border-gray-200">
-            <p className="text-xs text-gray-600 text-center">
-              Powered by OpenAI Sora 2
-            </p>
-          </div>
+        {/* Footer */}
+        <div className="p-4 border-t border-slate-200">
+          <p className="text-xs text-slate-500 text-center">
+            Built with OpenAI Sora 2
+          </p>
+          <p className="text-xs text-slate-400 text-center mt-1">
+            v1.0.0
+          </p>
         </div>
       </aside>
 
       {/* Overlay for mobile */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
+          className="fixed inset-0 bg-black/30 z-30 md:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
