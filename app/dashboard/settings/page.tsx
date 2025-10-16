@@ -1,4 +1,5 @@
 import ApiKeyInput from '@/components/api-key-input'
+import ShortcutsHelp from '@/components/shortcuts-help'
 
 export default function SettingsPage() {
   return (
@@ -97,6 +98,54 @@ export default function SettingsPage() {
                 <p className="text-sm text-slate-600">High quality videos take longer to generate but look better</p>
               </li>
             </ul>
+          </div>
+        </section>
+
+        {/* Keyboard Shortcuts */}
+        <section>
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">Keyboard Shortcuts</h2>
+          <div className="card p-6">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                <p className="text-sm text-slate-700">Generate video</p>
+                <div className="flex gap-1">
+                  <kbd className="px-2 py-1 text-xs font-medium bg-white border border-slate-200 rounded text-slate-700">
+                    Ctrl
+                  </kbd>
+                  <span className="text-slate-400">+</span>
+                  <kbd className="px-2 py-1 text-xs font-medium bg-white border border-slate-200 rounded text-slate-700">
+                    Enter
+                  </kbd>
+                </div>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                <p className="text-sm text-slate-700">Focus on prompt</p>
+                <div className="flex gap-1">
+                  <kbd className="px-2 py-1 text-xs font-medium bg-white border border-slate-200 rounded text-slate-700">
+                    Ctrl
+                  </kbd>
+                  <span className="text-slate-400">+</span>
+                  <kbd className="px-2 py-1 text-xs font-medium bg-white border border-slate-200 rounded text-slate-700">
+                    K
+                  </kbd>
+                </div>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                <p className="text-sm text-slate-700">Clear prompt</p>
+                <div className="flex gap-1">
+                  <kbd className="px-2 py-1 text-xs font-medium bg-white border border-slate-200 rounded text-slate-700">
+                    Ctrl
+                  </kbd>
+                  <span className="text-slate-400">+</span>
+                  <kbd className="px-2 py-1 text-xs font-medium bg-white border border-slate-200 rounded text-slate-700">
+                    Backspace
+                  </kbd>
+                </div>
+              </div>
+            </div>
+            <p className="text-xs text-slate-500 mt-4">
+              On Mac, use Cmd instead of Ctrl for all shortcuts
+            </p>
           </div>
         </section>
       </div>

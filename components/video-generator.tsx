@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { StorageManager } from '@/lib/storage'
 import { isValidApiKey } from '@/lib/sora-client'
 import TemplateGallery from './template-gallery'
+import { useKeyboardShortcuts, SHORTCUT_KEYS } from '@/lib/keyboard-shortcuts'
 
 interface VideoGeneratorProps {
   onGenerate?: (videoId: string) => void
@@ -20,6 +21,26 @@ export default function VideoGenerator({
   const [quality, setQuality] = useState<'standard' | 'high'>('standard')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const formRef = useRef<HTMLFormElement>(null)
+  const promptRef = useRef<HTMLTextAreaElement>(null)
+
+  // Setup keyboard shortcuts
+  useKeyboardShortcuts({
+    [SHORTCUT_KEYS.GENERATE]: () => {
+      if (formRef.current && !isLoading && prompt.trim()) {
+        formRef.current.dispatchEvent(
+          new Event('submit', { bubbles: true, cancelable: true })
+        )
+      }
+    },
+    [SHORTCUT_KEYS.CLEAR_PROMPT]: () => {
+      setPrompt('')
+      promptRef.current?.focus()
+    },
+    [SHORTCUT_KEYS.FOCUS_PROMPT]: () => {
+      promptRef.current?.focus()
+    },
+  })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -84,13 +105,15 @@ export default function VideoGenerator({
         <p className="text-slate-500 text-sm mt-1">Create stunning videos from text descriptions</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
         {/* Prompt */}
         <div>
           <label htmlFor="prompt" className="block text-sm font-semibold text-slate-900 mb-3">
             Video Prompt
+            <span className="text-xs text-slate-500 font-normal ml-2">(Ctrl+K to focus, Ctrl+Enter to generate)</span>
           </label>
           <textarea
+            ref={promptRef}
             id="prompt"
             name="prompt"
             value={prompt}
