@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { StorageManager, GenerationRecord } from '@/lib/storage'
+import ProgressIndicator from './progress-indicator'
 
 interface VideoPreviewProps {
   videoId: string
@@ -119,45 +120,23 @@ export default function VideoPreview({
   const estimatedTime = status === 'pending' ? 120 : 90 // Different estimates for pending vs processing
 
   return (
-    <div className="bg-white p-6 rounded-lg border border-gray-200">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Video Generation Status</h3>
+    <div className="card p-6">
+      <h3 className="text-lg font-semibold text-slate-900 mb-6">Generation Status</h3>
 
-      {/* Status Indicator */}
+      {/* Advanced Progress Indicator */}
       <div className="mb-6">
-        <div className="flex items-center gap-3 mb-4">
-          <div
-            className={`w-4 h-4 rounded-full ${
-              status === 'completed'
-                ? 'bg-green-500'
-                : status === 'failed'
-                  ? 'bg-red-500'
-                  : 'bg-blue-500 animate-pulse'
-            }`}
-          />
-          <span className="font-medium text-gray-900 capitalize">{status}</span>
-        </div>
-
-        {/* Progress bar */}
-        {(status === 'processing' || status === 'pending') && (
-          <div className="space-y-2">
-            <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-blue-500 transition-all duration-1000"
-                style={{
-                  width: `${Math.min((elapsedTime / estimatedTime) * 100, 90)}%`,
-                }}
-              />
-            </div>
-            <p className="text-xs text-gray-600">
-              Elapsed: {formatTime(elapsedTime)} / Est. {formatTime(estimatedTime)}s
-            </p>
-          </div>
-        )}
+        <ProgressIndicator
+          status={status}
+          elapsedTime={elapsedTime}
+          onCancel={() => {
+            // Could add cancellation logic here in the future
+          }}
+        />
       </div>
 
       {/* Video Display */}
       {videoUrl && (
-        <div className="mb-6">
+        <div className="mb-6 space-y-3">
           <video
             controls
             className="w-full rounded-lg bg-black aspect-video"
@@ -172,9 +151,9 @@ export default function VideoPreview({
               a.click()
               document.body.removeChild(a)
             }}
-            className="mt-3 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium w-full"
+            className="w-full btn-primary"
           >
-            ↓ Download Video
+            Download Video
           </button>
         </div>
       )}
@@ -182,13 +161,22 @@ export default function VideoPreview({
       {/* Error Display */}
       {error && (
         <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-sm text-red-700">{error}</p>
+          <div className="flex items-start gap-3">
+            <div className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0">
+              <svg fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <p className="text-sm text-red-700">{error}</p>
+          </div>
         </div>
       )}
 
-      {/* Video ID */}
-      <div className="text-xs text-gray-500 mt-4 p-2 bg-gray-50 rounded">
-        Video ID: <span className="font-mono">{videoId}</span>
+      {/* Video ID & Debug Info */}
+      <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
+        <p className="text-xs text-slate-500">
+          ID: <span className="font-mono text-slate-600">{videoId.substring(0, 20)}...</span>
+        </p>
       </div>
     </div>
   )
