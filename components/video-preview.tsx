@@ -33,12 +33,53 @@ export default function VideoPreview({
       return
     }
 
+    setStatus('processing')
+    setVideoUrl(null)
+    setError(null)
+    setElapsedTime(0)
+    setIsPolling(true)
+
     let pollCount = 0
     const maxPolls = 120 // 10 minutes with 5-second intervals
+    let intervalId: ReturnType<typeof setInterval> | null = null
+    let controller: AbortController | null = null
+    let isActive = true
+
+    const stopPolling = () => {
+      if (intervalId) {
+        clearInterval(intervalId)
+        intervalId = null
+      }
+      if (controller) {
+        controller.abort()
+        controller = null
+      }
+      if (isActive) {
+        setIsPolling(false)
+      }
+    }
+
+    const handleFailure = (message: string) => {
+      if (!isActive) return
+      setError(message)
+      StorageManager.updateGeneration(videoId, {
+        status: 'failed',
+        error: message,
+      })
+      stopPolling()
+      onError?.(message)
+    }
 
     const pollStatus = async () => {
+      if (!isActive) return
+
       try {
-        const response = await fetch(`/api/status?videoId=${videoId}&apiKey=${apiKey}`)
+        controller?.abort()
+        controller = new AbortController()
+
+        const response = await fetch(`/api/status?videoId=${videoId}&apiKey=${apiKey}`, {
+          signal: controller.signal,
+        })
 
         if (!response.ok) {
           const errorData = await response.json()
@@ -46,6 +87,7 @@ export default function VideoPreview({
         }
 
         const data = await response.json()
+        if (!isActive) return
 
         setStatus(data.status)
 
@@ -56,38 +98,34 @@ export default function VideoPreview({
             videoUrl: data.videoUrl,
             completedAt: Date.now(),
           })
-          setIsPolling(false)
+          stopPolling()
           onComplete?.(data.videoUrl)
-        } else if (data.status === 'failed') {
+          return
+        }
+
+        if (data.status === 'failed') {
           const errorMessage = data.error?.message || 'Video generation failed'
-          setError(errorMessage)
-          StorageManager.updateGeneration(videoId, {
-            status: 'failed',
-            error: errorMessage,
-          })
-          setIsPolling(false)
-          onError?.(errorMessage)
-        } else if (pollCount >= maxPolls) {
-          const timeoutError = 'Video generation timed out'
-          setError(timeoutError)
-          StorageManager.updateGeneration(videoId, {
-            status: 'failed',
-            error: timeoutError,
-          })
-          setIsPolling(false)
-          onError?.(timeoutError)
+          handleFailure(errorMessage)
+          return
+        }
+
+        StorageManager.updateGeneration(videoId, {
+          status: data.status,
+        })
+
+        if (pollCount >= maxPolls) {
+          handleFailure('Video generation timed out')
+          return
         }
 
         pollCount++
       } catch (err) {
+        if (!isActive) return
+        if (err instanceof DOMException && err.name === 'AbortError') {
+          return
+        }
         const errorMessage = err instanceof Error ? err.message : 'An error occurred'
-        setError(errorMessage)
-        StorageManager.updateGeneration(videoId, {
-          status: 'failed',
-          error: errorMessage,
-        })
-        setIsPolling(false)
-        onError?.(errorMessage)
+        handleFailure(errorMessage)
       }
     }
 
@@ -95,9 +133,15 @@ export default function VideoPreview({
     pollStatus()
 
     // Set up polling interval
-    const interval = setInterval(pollStatus, 5000) // Poll every 5 seconds
+    intervalId = setInterval(pollStatus, 5000) // Poll every 5 seconds
 
-    return () => clearInterval(interval)
+    return () => {
+      isActive = false
+      if (intervalId) {
+        clearInterval(intervalId)
+      }
+      controller?.abort()
+    }
   }, [videoId, onComplete, onError])
 
   // Update elapsed time

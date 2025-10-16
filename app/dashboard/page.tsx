@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import VideoGenerator from '@/components/video-generator'
+import VideoGenerator, { GeneratedVideoDetails } from '@/components/video-generator'
 import VideoPreview from '@/components/video-preview'
 import HistoryList from '@/components/history-list'
 import { StorageManager } from '@/lib/storage'
@@ -10,15 +10,18 @@ export default function DashboardPage() {
   const [generatingVideoId, setGeneratingVideoId] = useState<string | null>(null)
   const [error, setError] = useState('')
 
-  const handleGenerate = (videoId: string) => {
+  const handleGenerate = (details: GeneratedVideoDetails) => {
     // Create a new generation record
     StorageManager.addGeneration({
-      id: videoId,
-      prompt: '', // Will be set by the form
-      status: 'pending',
+      id: details.videoId,
+      prompt: details.prompt,
+      status: 'processing',
       createdAt: Date.now(),
+      orientation: details.orientation,
+      duration: details.duration,
+      quality: details.quality,
     })
-    setGeneratingVideoId(videoId)
+    setGeneratingVideoId(details.videoId)
     setError('')
   }
 

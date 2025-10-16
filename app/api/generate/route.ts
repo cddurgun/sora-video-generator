@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { SoraClient } from '@/lib/sora-client'
-import { StorageManager } from '@/lib/storage'
 
 export async function POST(request: NextRequest) {
   try {

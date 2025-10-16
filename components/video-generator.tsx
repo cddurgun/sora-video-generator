@@ -1,20 +1,32 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, forwardRef, useImperativeHandle, useCallback } from 'react'
 import { StorageManager } from '@/lib/storage'
 import { isValidApiKey } from '@/lib/sora-client'
 import TemplateGallery from './template-gallery'
-import { useKeyboardShortcuts, SHORTCUT_KEYS } from '@/lib/keyboard-shortcuts'
+import { useKeyboardShortcuts, SHORTCUT_KEYS, SHORTCUT_DESCRIPTIONS } from '@/lib/keyboard-shortcuts'
+
+export interface GeneratedVideoDetails {
+  videoId: string
+  prompt: string
+  orientation: 'landscape' | 'portrait' | 'square'
+  duration: 5 | 10 | 20
+  quality: 'standard' | 'high'
+}
+
+export interface VideoGeneratorHandle {
+  prefillFromTemplate: (prompt: string, duration?: 5 | 10 | 20) => void
+}
 
 interface VideoGeneratorProps {
-  onGenerate?: (videoId: string) => void
+  onGenerate?: (details: GeneratedVideoDetails) => void
   onError?: (error: string) => void
 }
 
-export default function VideoGenerator({
-  onGenerate,
-  onError,
-}: VideoGeneratorProps) {
+const VideoGenerator = forwardRef<VideoGeneratorHandle, VideoGeneratorProps>(function VideoGenerator(
+  { onGenerate, onError },
+  ref
+) {
   const [prompt, setPrompt] = useState('')
   const [orientation, setOrientation] = useState<'landscape' | 'portrait' | 'square'>('landscape')
   const [duration, setDuration] = useState<5 | 10 | 20>(5)
@@ -26,6 +38,20 @@ export default function VideoGenerator({
   const [isFavorited, setIsFavorited] = useState(false)
   const [showFavoriteName, setShowFavoriteName] = useState(false)
   const [favoriteName, setFavoriteName] = useState('')
+
+  const prefillFromTemplate = useCallback((templatePrompt: string, templateDuration?: 5 | 10 | 20) => {
+    setPrompt(templatePrompt)
+    if (templateDuration) {
+      setDuration(templateDuration)
+    }
+    setShowFavoriteName(false)
+    setFavoriteName('')
+    promptRef.current?.focus()
+  }, [])
+
+  useImperativeHandle(ref, () => ({
+    prefillFromTemplate,
+  }), [prefillFromTemplate])
 
   const handleAddFavorite = () => {
     if (!favoriteName.trim() && !prompt.trim()) return
@@ -47,19 +73,28 @@ export default function VideoGenerator({
 
   // Setup keyboard shortcuts
   useKeyboardShortcuts({
-    [SHORTCUT_KEYS.GENERATE]: () => {
-      if (formRef.current && !isLoading && prompt.trim()) {
-        formRef.current.dispatchEvent(
-          new Event('submit', { bubbles: true, cancelable: true })
-        )
-      }
+    [SHORTCUT_KEYS.GENERATE]: {
+      description: SHORTCUT_DESCRIPTIONS[SHORTCUT_KEYS.GENERATE],
+      handler: () => {
+        if (formRef.current && !isLoading && prompt.trim()) {
+          formRef.current.dispatchEvent(
+            new Event('submit', { bubbles: true, cancelable: true })
+          )
+        }
+      },
     },
-    [SHORTCUT_KEYS.CLEAR_PROMPT]: () => {
-      setPrompt('')
-      promptRef.current?.focus()
+    [SHORTCUT_KEYS.CLEAR_PROMPT]: {
+      description: SHORTCUT_DESCRIPTIONS[SHORTCUT_KEYS.CLEAR_PROMPT],
+      handler: () => {
+        setPrompt('')
+        promptRef.current?.focus()
+      },
     },
-    [SHORTCUT_KEYS.FOCUS_PROMPT]: () => {
-      promptRef.current?.focus()
+    [SHORTCUT_KEYS.FOCUS_PROMPT]: {
+      description: SHORTCUT_DESCRIPTIONS[SHORTCUT_KEYS.FOCUS_PROMPT],
+      handler: () => {
+        promptRef.current?.focus()
+      },
     },
   })
 
@@ -67,8 +102,10 @@ export default function VideoGenerator({
     e.preventDefault()
     setError('')
 
+    const trimmedPrompt = prompt.trim()
+
     // Validation
-    if (!prompt.trim()) {
+    if (!trimmedPrompt) {
       const err = 'Please enter a video prompt'
       setError(err)
       onError?.(err)
@@ -91,7 +128,7 @@ export default function VideoGenerator({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          prompt: prompt.trim(),
+          prompt: trimmedPrompt,
           orientation,
           duration,
           quality,
@@ -108,8 +145,16 @@ export default function VideoGenerator({
 
       // Reset form
       setPrompt('')
+      setShowFavoriteName(false)
+      setFavoriteName('')
 
-      onGenerate?.(data.videoId)
+      onGenerate?.({
+        videoId: data.videoId,
+        prompt: trimmedPrompt,
+        orientation,
+        duration,
+        quality,
+      })
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An error occurred'
       setError(errorMessage)
@@ -299,17 +344,23 @@ export default function VideoGenerator({
       </form>
     </div>
   )
-}
+})
+
+VideoGenerator.displayName = 'VideoGenerator'
+
+export default VideoGenerator
 
 // Helper function to add template section
 export function VideoGeneratorWithTemplates({
   onGenerate,
   onError,
 }: VideoGeneratorProps) {
+  const generatorRef = useRef<VideoGeneratorHandle>(null)
+
   return (
     <div className="space-y-8">
       <div>
-        <VideoGenerator onGenerate={onGenerate} onError={onError} />
+        <VideoGenerator ref={generatorRef} onGenerate={onGenerate} onError={onError} />
       </div>
 
       <div className="card p-6">
@@ -317,17 +368,7 @@ export function VideoGeneratorWithTemplates({
         <p className="text-sm text-slate-600 mb-4">Choose from pre-crafted prompts to get started quickly</p>
         <TemplateGallery
           onSelectTemplate={(prompt, duration) => {
-            // Get the form element and update it
-            const textarea = document.querySelector('textarea[name="prompt"]') as HTMLTextAreaElement
-            if (textarea) {
-              textarea.value = prompt
-              textarea.focus()
-              // Update duration too if available
-              const durationSelect = document.querySelector('select[name="duration"]') as HTMLSelectElement
-              if (durationSelect && duration) {
-                durationSelect.value = String(duration)
-              }
-            }
+            generatorRef.current?.prefillFromTemplate(prompt, duration)
           }}
         />
       </div>

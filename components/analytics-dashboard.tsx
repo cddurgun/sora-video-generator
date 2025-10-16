@@ -148,7 +148,7 @@ export default function AnalyticsDashboard() {
         <h4 className="font-semibold text-slate-900 mb-3">Quick Insights</h4>
         <ul className="space-y-2 text-sm text-slate-700">
           <li>
-            ✓ You've successfully generated <strong>{analytics.successfulGenerations}</strong> videos
+            ✓ You have successfully generated <strong>{analytics.successfulGenerations}</strong> videos
           </li>
           <li>
             ✓ Your average generation time is <strong>{analytics.averageGenerationTime} seconds</strong>
