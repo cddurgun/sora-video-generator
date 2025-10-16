@@ -1,10 +1,19 @@
 import Sidebar from '@/components/sidebar'
+import { auth } from '@/auth'
+import { redirect } from 'next/navigation'
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const session = await auth()
+
+  // Protect dashboard - redirect to login if not authenticated
+  if (!session) {
+    redirect('/login')
+  }
+
   return (
     <div className="flex h-screen bg-white">
       <Sidebar />
