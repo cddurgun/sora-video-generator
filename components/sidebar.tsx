@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
+import DarkModeToggle from './dark-mode-toggle'
 
 export default function Sidebar() {
   const pathname = usePathname()
@@ -75,11 +76,14 @@ export default function Sidebar() {
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-slate-200">
-          <p className="text-xs text-slate-500 text-center">
+        <div className="p-4 border-t border-slate-200 dark:border-slate-700 space-y-3">
+          <div className="flex justify-center">
+            <DarkModeToggle />
+          </div>
+          <p className="text-xs text-slate-500 dark:text-slate-400 text-center">
             Built with OpenAI Sora 2
           </p>
-          <p className="text-xs text-slate-400 text-center mt-1">
+          <p className="text-xs text-slate-400 dark:text-slate-500 text-center">
             v1.0.0
           </p>
         </div>
