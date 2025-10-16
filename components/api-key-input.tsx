@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { StorageManager } from '@/lib/storage'
 import { isValidApiKey } from '@/lib/sora-client'
 
@@ -9,17 +9,11 @@ interface ApiKeyInputProps {
 }
 
 export default function ApiKeyInput({ onSave }: ApiKeyInputProps) {
-  const [apiKey, setApiKey] = useState('')
+  const initialApiKey = typeof window !== 'undefined' ? (StorageManager.getApiKey() || '') : ''
+  const [apiKey, setApiKey] = useState(initialApiKey)
   const [isEditing, setIsEditing] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
-
-  useEffect(() => {
-    const stored = StorageManager.getApiKey()
-    if (stored) {
-      setApiKey(stored)
-    }
-  }, [])
 
   const handleSave = () => {
     if (!apiKey.trim()) {
@@ -52,11 +46,11 @@ export default function ApiKeyInput({ onSave }: ApiKeyInputProps) {
   }
 
   return (
-    <div className="bg-white p-6 rounded-lg border border-gray-200">
+    <div className="card p-6">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">OpenAI API Key</h3>
-          <p className="text-sm text-gray-600 mt-1">
+          <h3 className="text-lg font-semibold text-neutral-900">OpenAI API Key</h3>
+          <p className="text-sm text-neutral-600 mt-1">
             Your API key is stored locally in your browser
           </p>
         </div>
@@ -73,7 +67,7 @@ export default function ApiKeyInput({ onSave }: ApiKeyInputProps) {
           <div>
             <label
               htmlFor="apiKey"
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-medium text-neutral-700 mb-2"
             >
               API Key
             </label>
@@ -86,15 +80,15 @@ export default function ApiKeyInput({ onSave }: ApiKeyInputProps) {
                 setError('')
               }}
               placeholder="sk-..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-transparent outline-none"
             />
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-neutral-500 mt-2">
               Get your API key from{' '}
               <a
                 href="https://platform.openai.com/api-keys"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
+                className="text-neutral-900 hover:underline"
               >
                 platform.openai.com/api-keys
               </a>
@@ -110,7 +104,7 @@ export default function ApiKeyInput({ onSave }: ApiKeyInputProps) {
           <div className="flex gap-3">
             <button
               onClick={handleSave}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              className="btn-primary"
             >
               Save Key
             </button>
@@ -121,7 +115,7 @@ export default function ApiKeyInput({ onSave }: ApiKeyInputProps) {
                 const stored = StorageManager.getApiKey()
                 if (stored) setApiKey(stored)
               }}
-              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+              className="btn-secondary"
             >
               Cancel
             </button>
@@ -131,7 +125,7 @@ export default function ApiKeyInput({ onSave }: ApiKeyInputProps) {
         <div className="flex gap-3">
           <button
             onClick={() => setIsEditing(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            className="btn-primary"
           >
             {apiKey ? 'Update Key' : 'Add Key'}
           </button>

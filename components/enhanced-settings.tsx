@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { StorageManager } from '@/lib/storage'
 
 export interface UserPreferences {
@@ -42,14 +42,11 @@ export function saveUserPreferences(prefs: UserPreferences) {
 }
 
 export default function EnhancedSettings() {
-  const [prefs, setPrefs] = useState<UserPreferences>(DEFAULT_PREFERENCES)
-  const [loading, setLoading] = useState(true)
+  const [prefs, setPrefs] = useState<UserPreferences>(
+    typeof window !== 'undefined' ? getUserPreferences() : DEFAULT_PREFERENCES
+  )
+  const [loading] = useState(false)
   const [saved, setSaved] = useState(false)
-
-  useEffect(() => {
-    setPrefs(getUserPreferences())
-    setLoading(false)
-  }, [])
 
   const handleChange = (key: keyof UserPreferences, value: any) => {
     const updated = { ...prefs, [key]: value }
@@ -77,26 +74,26 @@ export default function EnhancedSettings() {
   }
 
   if (loading) {
-    return <div className="text-center py-4 text-slate-500">Loading preferences...</div>
+    return <div className="text-center py-4 text-neutral-500">Loading preferences...</div>
   }
 
   return (
     <div className="space-y-6">
       {/* General Settings */}
       <section>
-        <h3 className="text-lg font-semibold text-slate-900 mb-4">General Preferences</h3>
+        <h3 className="text-lg font-semibold text-neutral-900 mb-4">General Preferences</h3>
         <div className="card p-6 space-y-4">
           {/* Auto-save prompts */}
           <div className="flex items-center justify-between">
             <div>
-              <label className="font-medium text-slate-900">Auto-save Prompts</label>
-              <p className="text-xs text-slate-500 mt-1">Automatically save prompts as favorites</p>
+              <label className="font-medium text-neutral-900">Auto-save Prompts</label>
+              <p className="text-xs text-neutral-500 mt-1">Automatically save prompts as favorites</p>
             </div>
             <input
               type="checkbox"
               checked={prefs.autoSavePrompts}
               onChange={(e) => handleChange('autoSavePrompts', e.target.checked)}
-              className="w-5 h-5 rounded border-slate-300 cursor-pointer"
+              className="w-5 h-5 rounded border-neutral-300 cursor-pointer"
             />
           </div>
 
@@ -104,14 +101,14 @@ export default function EnhancedSettings() {
           <div className="divider"></div>
           <div className="flex items-center justify-between">
             <div>
-              <label className="font-medium text-slate-900">Show Tips</label>
-              <p className="text-xs text-slate-500 mt-1">Display helpful tips throughout the app</p>
+              <label className="font-medium text-neutral-900">Show Tips</label>
+              <p className="text-xs text-neutral-500 mt-1">Display helpful tips throughout the app</p>
             </div>
             <input
               type="checkbox"
               checked={prefs.showTips}
               onChange={(e) => handleChange('showTips', e.target.checked)}
-              className="w-5 h-5 rounded border-slate-300 cursor-pointer"
+              className="w-5 h-5 rounded border-neutral-300 cursor-pointer"
             />
           </div>
 
@@ -119,14 +116,14 @@ export default function EnhancedSettings() {
           <div className="divider"></div>
           <div className="flex items-center justify-between">
             <div>
-              <label className="font-medium text-slate-900">Notifications</label>
-              <p className="text-xs text-slate-500 mt-1">Browser notifications when videos complete</p>
+              <label className="font-medium text-neutral-900">Notifications</label>
+              <p className="text-xs text-neutral-500 mt-1">Browser notifications when videos complete</p>
             </div>
             <input
               type="checkbox"
               checked={prefs.notificationsEnabled}
               onChange={(e) => handleChange('notificationsEnabled', e.target.checked)}
-              className="w-5 h-5 rounded border-slate-300 cursor-pointer"
+              className="w-5 h-5 rounded border-neutral-300 cursor-pointer"
             />
           </div>
         </div>
@@ -134,11 +131,11 @@ export default function EnhancedSettings() {
 
       {/* Default Generation Settings */}
       <section>
-        <h3 className="text-lg font-semibold text-slate-900 mb-4">Default Generation Settings</h3>
+        <h3 className="text-lg font-semibold text-neutral-900 mb-4">Default Generation Settings</h3>
         <div className="card p-6 space-y-4">
           {/* Default Duration */}
           <div>
-            <label className="block text-sm font-medium text-slate-900 mb-2">
+            <label className="block text-sm font-medium text-neutral-900 mb-2">
               Default Duration
             </label>
             <select
@@ -154,7 +151,7 @@ export default function EnhancedSettings() {
 
           {/* Default Quality */}
           <div>
-            <label className="block text-sm font-medium text-slate-900 mb-2">
+            <label className="block text-sm font-medium text-neutral-900 mb-2">
               Default Quality
             </label>
             <select
@@ -169,7 +166,7 @@ export default function EnhancedSettings() {
 
           {/* Default Orientation */}
           <div>
-            <label className="block text-sm font-medium text-slate-900 mb-2">
+            <label className="block text-sm font-medium text-neutral-900 mb-2">
               Default Orientation
             </label>
             <select
@@ -187,11 +184,11 @@ export default function EnhancedSettings() {
 
       {/* Data Management */}
       <section>
-        <h3 className="text-lg font-semibold text-slate-900 mb-4">Data Management</h3>
+        <h3 className="text-lg font-semibold text-neutral-900 mb-4">Data Management</h3>
         <div className="card p-6 space-y-3">
           <button
             onClick={handleReset}
-            className="w-full py-2 px-4 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors font-medium"
+            className="w-full py-2 px-4 bg-neutral-200 text-neutral-900 rounded-lg hover:bg-neutral-300 transition-colors font-medium"
           >
             Reset All Settings to Default
           </button>
@@ -212,8 +209,8 @@ export default function EnhancedSettings() {
       )}
 
       {/* Info */}
-      <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
-        <p className="text-xs text-slate-600">
+      <div className="p-4 bg-neutral-100 border border-neutral-200 rounded-lg">
+        <p className="text-xs text-neutral-600">
           Your preferences are saved locally in your browser and never sent to any server.
         </p>
       </div>

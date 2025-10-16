@@ -40,13 +40,13 @@ export default function ShortcutsHelp() {
             className="fixed inset-0 bg-black/30 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-white rounded-lg shadow-xl max-w-md w-full mx-4 animate-slide-up">
+          <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 card max-w-md w-full mx-4 animate-slide-up">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-slate-900">Keyboard Shortcuts</h3>
+                <h3 className="text-lg font-semibold text-neutral-900">Keyboard Shortcuts</h3>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="text-slate-400 hover:text-slate-600"
+                  className="text-neutral-400 hover:text-neutral-600"
                 >
                   ✕
                 </button>
@@ -54,15 +54,15 @@ export default function ShortcutsHelp() {
 
               <div className="space-y-3">
                 {SHORTCUTS.map((shortcut, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                    <p className="text-sm text-slate-700 flex-1">{shortcut.description}</p>
+                  <div key={idx} className="flex items-center justify-between p-3 bg-neutral-100 rounded-lg">
+                    <p className="text-sm text-neutral-700 flex-1">{shortcut.description}</p>
                     <div className="flex gap-1">
                       {shortcut.keys.map((key, i) => (
                         <span key={i}>
-                          <kbd className="px-2 py-1 text-xs font-medium bg-white border border-slate-200 rounded text-slate-700">
+                          <kbd className="px-2 py-1 text-xs font-medium bg-white border border-neutral-200 rounded text-neutral-700">
                             {key}
                           </kbd>
-                          {i < shortcut.keys.length - 1 && <span className="mx-1 text-slate-400">+</span>}
+                          {i < shortcut.keys.length - 1 && <span className="mx-1 text-neutral-400">+</span>}
                         </span>
                       ))}
                     </div>
@@ -70,7 +70,7 @@ export default function ShortcutsHelp() {
                 ))}
               </div>
 
-              <p className="text-xs text-slate-500 mt-4">
+              <p className="text-xs text-neutral-500 mt-4">
                 On Mac, use Cmd instead of Ctrl
               </p>
             </div>

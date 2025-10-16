@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useMemo } from 'react'
 
 interface ProgressIndicatorProps {
   status: 'pending' | 'processing' | 'completed' | 'failed'
@@ -13,15 +13,9 @@ export default function ProgressIndicator({
   elapsedTime,
   onCancel,
 }: ProgressIndicatorProps) {
-  const [progress, setProgress] = useState(0)
-
-  useEffect(() => {
-    // Different estimations for different statuses
+  const progress = useMemo(() => {
     const estimatedTime = status === 'pending' ? 120 : 90
-
-    // Smooth progress curve - slower at start, faster in middle, slower at end
-    const percentage = Math.min((elapsedTime / estimatedTime) * 100, 90)
-    setProgress(percentage)
+    return Math.min((elapsedTime / estimatedTime) * 100, 90)
   }, [elapsedTime, status])
 
   const formatTime = (seconds: number) => {
@@ -33,12 +27,12 @@ export default function ProgressIndicator({
   const statusConfig = {
     pending: {
       label: 'Initializing',
-      color: 'bg-slate-400',
+      color: 'bg-neutral-400',
       icon: '⏳',
     },
     processing: {
       label: 'Processing',
-      color: 'bg-blue-600',
+      color: 'bg-neutral-700',
       icon: '⚡',
     },
     completed: {
@@ -62,9 +56,9 @@ export default function ProgressIndicator({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className={`w-3 h-3 rounded-full ${config.color} animate-pulse`}></div>
-          <span className="text-sm font-medium text-slate-700">{config.label}</span>
+          <span className="text-sm font-medium text-neutral-700">{config.label}</span>
         </div>
-        <span className="text-xs font-mono text-slate-500">
+        <span className="text-xs font-mono text-neutral-500">
           {formatTime(elapsedTime)} / {formatTime(estimatedTotal)}
         </span>
       </div>
@@ -72,7 +66,7 @@ export default function ProgressIndicator({
       {/* Progress Bar */}
       <div className="relative">
         {/* Background bar */}
-        <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+        <div className="w-full h-2 bg-neutral-200 rounded-full overflow-hidden">
           {/* Progress fill */}
           <div
             className={`h-full ${config.color} transition-all duration-500 ease-out rounded-full`}
@@ -95,17 +89,17 @@ export default function ProgressIndicator({
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-slate-50 p-3 rounded-lg">
-          <p className="text-xs text-slate-500 mb-1">Elapsed</p>
-          <p className="text-sm font-semibold text-slate-900">{formatTime(elapsedTime)}</p>
+        <div className="bg-neutral-100 p-3 rounded-lg">
+          <p className="text-xs text-neutral-500 mb-1">Elapsed</p>
+          <p className="text-sm font-semibold text-neutral-900">{formatTime(elapsedTime)}</p>
         </div>
-        <div className="bg-slate-50 p-3 rounded-lg">
-          <p className="text-xs text-slate-500 mb-1">Progress</p>
-          <p className="text-sm font-semibold text-slate-900">{Math.floor(progress)}%</p>
+        <div className="bg-neutral-100 p-3 rounded-lg">
+          <p className="text-xs text-neutral-500 mb-1">Progress</p>
+          <p className="text-sm font-semibold text-neutral-900">{Math.floor(progress)}%</p>
         </div>
-        <div className="bg-slate-50 p-3 rounded-lg">
-          <p className="text-xs text-slate-500 mb-1">ETA</p>
-          <p className="text-sm font-semibold text-slate-900">
+        <div className="bg-neutral-100 p-3 rounded-lg">
+          <p className="text-xs text-neutral-500 mb-1">ETA</p>
+          <p className="text-sm font-semibold text-neutral-900">
             {formatTime(Math.max(0, estimatedTotal - elapsedTime))}
           </p>
         </div>
@@ -115,7 +109,7 @@ export default function ProgressIndicator({
       {(status === 'pending' || status === 'processing') && onCancel && (
         <button
           onClick={onCancel}
-          className="w-full py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors border border-slate-200"
+          className="w-full py-2 text-sm font-medium text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg transition-colors border border-neutral-200"
         >
           Cancel Generation
         </button>

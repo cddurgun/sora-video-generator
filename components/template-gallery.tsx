@@ -92,8 +92,8 @@ export default function TemplateGallery({ onSelectTemplate }: TemplateGalleryPro
             onClick={() => setSelectedCategory(cat.id)}
             className={`px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-all ${
               selectedCategory === cat.id
-                ? 'bg-blue-600 text-white'
-                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                ? 'bg-neutral-900 text-white shadow-sm'
+                : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
             }`}
           >
             {cat.label}
@@ -107,18 +107,18 @@ export default function TemplateGallery({ onSelectTemplate }: TemplateGalleryPro
           <button
             key={template.id}
             onClick={() => onSelectTemplate(template.prompt, template.duration)}
-            className="card p-4 text-left hover:border-blue-400 hover:shadow-md transition-all"
+            className="card p-4 text-left hover:border-neutral-400 hover:shadow-lg transition-all"
           >
             <div className="flex items-start justify-between mb-2">
               <div>
-                <h4 className="font-semibold text-slate-900">{template.name}</h4>
-                <p className="text-xs text-slate-500 mt-1">{template.description}</p>
+                <h4 className="font-semibold text-neutral-900">{template.name}</h4>
+                <p className="text-xs text-neutral-500 mt-1">{template.description}</p>
               </div>
-              <div className="text-xs px-2 py-1 bg-slate-100 rounded text-slate-600 font-medium flex-shrink-0">
+              <div className="text-xs px-2 py-1 bg-neutral-100 rounded text-neutral-600 font-medium flex-shrink-0">
                 {template.duration}s
               </div>
             </div>
-            <p className="text-xs text-slate-600 line-clamp-2">{template.prompt}</p>
+            <p className="text-xs text-neutral-600 line-clamp-2">{template.prompt}</p>
           </button>
         ))}
       </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { StorageManager, FavoritePrompt } from '@/lib/storage'
 
 interface FavoritesPanelProps {
@@ -8,29 +8,25 @@ interface FavoritesPanelProps {
 }
 
 export default function FavoritesPanel({ onSelectFavorite }: FavoritesPanelProps) {
-  const [favorites, setFavorites] = useState<FavoritePrompt[]>([])
-  const [loading, setLoading] = useState(true)
+  const isClient = typeof window !== 'undefined'
+  const [revision, setRevision] = useState(0)
 
-  useEffect(() => {
-    const fav = StorageManager.getFavorites()
-    setFavorites(fav)
-    setLoading(false)
-  }, [])
+  const favorites = isClient ? StorageManager.getFavorites() : []
 
   const handleRemove = (id: string) => {
     StorageManager.removeFavorite(id)
-    setFavorites(StorageManager.getFavorites())
+    setRevision((prev) => prev + 1)
   }
 
-  if (loading) {
-    return <div className="text-center py-4 text-slate-500">Loading favorites...</div>
+  if (!isClient) {
+    return <div className="text-center py-4 text-neutral-500">Loading favorites...</div>
   }
 
   if (favorites.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-slate-500 text-sm">No favorite prompts yet</p>
-        <p className="text-slate-400 text-xs mt-2">Save your favorite prompts to access them quickly</p>
+        <p className="text-neutral-500 text-sm">No favorite prompts yet</p>
+        <p className="text-neutral-400 text-xs mt-2">Save your favorite prompts to access them quickly</p>
       </div>
     )
   }
@@ -40,27 +36,27 @@ export default function FavoritesPanel({ onSelectFavorite }: FavoritesPanelProps
       {favorites.map(favorite => (
         <div
           key={favorite.id}
-          className="card p-4 hover:border-blue-400 transition-all"
+          className="card p-4 hover:border-neutral-400 transition-all"
         >
           <div className="flex items-start justify-between mb-2">
             <div className="flex-1">
-              <h4 className="font-semibold text-slate-900">{favorite.name}</h4>
-              <p className="text-xs text-slate-500 mt-1">
+              <h4 className="font-semibold text-neutral-900">{favorite.name}</h4>
+              <p className="text-xs text-neutral-500 mt-1">
                 {favorite.duration}s • {favorite.orientation} • {favorite.quality}
               </p>
             </div>
             <button
               onClick={() => handleRemove(favorite.id)}
-              className="text-slate-400 hover:text-red-600 transition-colors ml-2"
+              className="text-neutral-400 hover:text-red-600 transition-colors ml-2"
               title="Remove from favorites"
             >
               ✕
             </button>
           </div>
-          <p className="text-xs text-slate-600 line-clamp-2 mb-3">{favorite.prompt}</p>
+          <p className="text-xs text-neutral-600 line-clamp-2 mb-3">{favorite.prompt}</p>
           <button
             onClick={() => onSelectFavorite?.(favorite)}
-            className="w-full py-2 text-sm font-medium bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition-colors"
+            className="w-full py-2 text-sm font-medium bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors"
           >
             Use This Prompt
           </button>

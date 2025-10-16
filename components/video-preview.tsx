@@ -165,7 +165,7 @@ export default function VideoPreview({
 
   return (
     <div className="card p-6">
-      <h3 className="text-lg font-semibold text-slate-900 mb-6">Generation Status</h3>
+      <h3 className="text-lg font-semibold text-neutral-900 mb-6">Generation Status</h3>
 
       {/* Advanced Progress Indicator */}
       <div className="mb-6">
@@ -217,9 +217,9 @@ export default function VideoPreview({
       )}
 
       {/* Video ID & Debug Info */}
-      <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
-        <p className="text-xs text-slate-500">
-          ID: <span className="font-mono text-slate-600">{videoId.substring(0, 20)}...</span>
+      <div className="p-3 bg-neutral-100 border border-neutral-200 rounded-lg">
+        <p className="text-xs text-neutral-500">
+          ID: <span className="font-mono text-neutral-600">{videoId.substring(0, 20)}...</span>
         </p>
       </div>
     </div>

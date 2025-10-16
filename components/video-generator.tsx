@@ -167,16 +167,16 @@ const VideoGenerator = forwardRef<VideoGeneratorHandle, VideoGeneratorProps>(fun
   return (
     <div className="card p-6">
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-slate-900">Generate Video</h2>
-        <p className="text-slate-500 text-sm mt-1">Create stunning videos from text descriptions</p>
+        <h2 className="text-2xl font-bold text-neutral-900">Generate Video</h2>
+        <p className="text-neutral-500 text-sm mt-1">Create stunning videos from text descriptions</p>
       </div>
 
       <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
         {/* Prompt */}
         <div>
-          <label htmlFor="prompt" className="block text-sm font-semibold text-slate-900 mb-3">
+          <label htmlFor="prompt" className="block text-sm font-semibold text-neutral-900 mb-3">
             Video Prompt
-            <span className="text-xs text-slate-500 font-normal ml-2">(Ctrl+K to focus, Ctrl+Enter to generate)</span>
+            <span className="text-xs text-neutral-500 font-normal ml-2">(Ctrl+K to focus, Ctrl+Enter to generate)</span>
           </label>
           <textarea
             ref={promptRef}
@@ -190,10 +190,10 @@ const VideoGenerator = forwardRef<VideoGeneratorHandle, VideoGeneratorProps>(fun
             disabled={isLoading}
           />
           <div className="flex justify-between items-center mt-2">
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-neutral-500">
               Describe what you want to see in your video
             </p>
-            <p className={`text-xs font-medium ${prompt.length > 450 ? 'text-red-600' : 'text-slate-400'}`}>
+            <p className={`text-xs font-medium ${prompt.length > 450 ? 'text-red-600' : 'text-neutral-400'}`}>
               {prompt.length}/500
             </p>
           </div>
@@ -203,7 +203,7 @@ const VideoGenerator = forwardRef<VideoGeneratorHandle, VideoGeneratorProps>(fun
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Orientation */}
           <div>
-            <label htmlFor="orientation" className="block text-sm font-semibold text-slate-900 mb-2">
+            <label htmlFor="orientation" className="block text-sm font-semibold text-neutral-900 mb-2">
               Orientation
             </label>
             <select
@@ -221,7 +221,7 @@ const VideoGenerator = forwardRef<VideoGeneratorHandle, VideoGeneratorProps>(fun
 
           {/* Duration */}
           <div>
-            <label htmlFor="duration" className="block text-sm font-semibold text-slate-900 mb-2">
+            <label htmlFor="duration" className="block text-sm font-semibold text-neutral-900 mb-2">
               Duration
             </label>
             <select
@@ -240,7 +240,7 @@ const VideoGenerator = forwardRef<VideoGeneratorHandle, VideoGeneratorProps>(fun
 
           {/* Quality */}
           <div>
-            <label htmlFor="quality" className="block text-sm font-semibold text-slate-900 mb-2">
+            <label htmlFor="quality" className="block text-sm font-semibold text-neutral-900 mb-2">
               Quality
             </label>
             <select
@@ -268,8 +268,8 @@ const VideoGenerator = forwardRef<VideoGeneratorHandle, VideoGeneratorProps>(fun
 
         {/* Favorite Name Input */}
         {showFavoriteName && (
-          <div className="space-y-2 p-4 bg-slate-50 border border-slate-200 rounded-lg">
-            <label className="block text-sm font-medium text-slate-900">
+          <div className="space-y-2 p-4 bg-neutral-100 border border-neutral-200 rounded-lg">
+            <label className="block text-sm font-medium text-neutral-900">
               Favorite Name
             </label>
             <input
@@ -329,15 +329,15 @@ const VideoGenerator = forwardRef<VideoGeneratorHandle, VideoGeneratorProps>(fun
         </button>
 
         {/* Info */}
-        <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
+        <div className="p-4 bg-neutral-100 border border-neutral-200 rounded-lg">
           <div className="flex gap-3">
-            <div className="text-slate-500 flex-shrink-0 mt-0.5">
+            <div className="text-neutral-500 flex-shrink-0 mt-0.5">
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
               </svg>
             </div>
-            <p className="text-sm text-slate-600">
-              <strong className="text-slate-900">Pro tip:</strong> Video generation typically takes 1-2 minutes. Your progress will be tracked in real-time.
+            <p className="text-sm text-neutral-600">
+              <strong className="text-neutral-900">Pro tip:</strong> Video generation typically takes 1-2 minutes. Your progress will be tracked in real-time.
             </p>
           </div>
         </div>
@@ -364,8 +364,8 @@ export function VideoGeneratorWithTemplates({
       </div>
 
       <div className="card p-6">
-        <h3 className="text-lg font-semibold text-slate-900 mb-4">Quick Start Templates</h3>
-        <p className="text-sm text-slate-600 mb-4">Choose from pre-crafted prompts to get started quickly</p>
+        <h3 className="text-lg font-semibold text-neutral-900 mb-4">Quick Start Templates</h3>
+        <p className="text-sm text-neutral-600 mb-4">Choose from pre-crafted prompts to get started quickly</p>
         <TemplateGallery
           onSelectTemplate={(prompt, duration) => {
             generatorRef.current?.prefillFromTemplate(prompt, duration)

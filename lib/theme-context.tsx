@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback } from 'react'
 
 type Theme = 'light' | 'dark'
 
@@ -12,21 +12,15 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('light')
-  const [mounted, setMounted] = useState(false)
-
-  // Load theme from localStorage on mount
-  useEffect(() => {
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window === 'undefined') return 'light'
     const stored = localStorage.getItem('sora_theme') as Theme | null
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    return stored || (prefersDark ? 'dark' : 'light')
+  })
+  // Avoid extra mounted state to satisfy React Compiler rules
 
-    const initialTheme = stored || (prefersDark ? 'dark' : 'light')
-    setTheme(initialTheme)
-    applyTheme(initialTheme)
-    setMounted(true)
-  }, [])
-
-  const applyTheme = (newTheme: Theme) => {
+  const applyTheme = useCallback((newTheme: Theme) => {
     const root = document.documentElement
     if (newTheme === 'dark') {
       root.classList.add('dark')
@@ -36,18 +30,20 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       root.style.colorScheme = 'light'
     }
     localStorage.setItem('sora_theme', newTheme)
-  }
+  }, [])
 
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light'
-    setTheme(newTheme)
-    applyTheme(newTheme)
-  }
+  // Apply theme on mount
+  useEffect(() => {
+    applyTheme(theme)
+  }, [applyTheme, theme])
 
-  // Prevent hydration mismatch
-  if (!mounted) {
-    return <>{children}</>
-  }
+  const toggleTheme = useCallback(() => {
+    setTheme((current) => {
+      const nextTheme = current === 'light' ? 'dark' : 'light'
+      applyTheme(nextTheme)
+      return nextTheme
+    })
+  }, [applyTheme])
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>

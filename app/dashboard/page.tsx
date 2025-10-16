@@ -33,8 +33,8 @@ export default function DashboardPage() {
     <div className="max-w-7xl space-y-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900">Video Generator</h1>
-        <p className="text-slate-500 mt-2">
+        <h1 className="text-3xl font-bold text-neutral-900">Video Generator</h1>
+        <p className="text-neutral-500 mt-2">
           Create stunning videos from text descriptions using Sora 2
         </p>
       </div>
@@ -52,7 +52,7 @@ export default function DashboardPage() {
           {/* Current generation preview */}
           {generatingVideoId && (
             <div className="animate-slide-up">
-              <h2 className="text-lg font-semibold text-slate-900 mb-4">
+              <h2 className="text-lg font-semibold text-neutral-900 mb-4">
                 Generation in Progress
               </h2>
               <VideoPreview
@@ -69,7 +69,7 @@ export default function DashboardPage() {
 
         {/* Right column - Recent history */}
         <div className="card p-6 h-fit sticky top-6">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">Recent Videos</h2>
+          <h2 className="text-lg font-semibold text-neutral-900 mb-4">Recent Videos</h2>
           <HistoryList limit={5} />
           <a
             href="/dashboard/history"
