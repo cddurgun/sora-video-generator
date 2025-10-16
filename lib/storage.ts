@@ -13,7 +13,18 @@ export interface GenerationRecord {
 
 const STORAGE_KEY = 'sora_generations'
 const API_KEY_STORAGE = 'sora_api_key'
+const FAVORITES_KEY = 'sora_favorites'
 const MAX_HISTORY = 50
+
+export interface FavoritePrompt {
+  id: string
+  prompt: string
+  name: string
+  duration?: 5 | 10 | 20
+  orientation?: 'landscape' | 'portrait' | 'square'
+  quality?: 'standard' | 'high'
+  createdAt: number
+}
 
 export class StorageManager {
   static getApiKey(): string | null {
@@ -84,5 +95,49 @@ export class StorageManager {
 
   static generateId(): string {
     return `gen_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  }
+
+  // Favorites management
+  static getFavorites(): FavoritePrompt[] {
+    if (typeof window === 'undefined') return []
+    const data = localStorage.getItem(FAVORITES_KEY)
+    if (!data) return []
+    try {
+      return JSON.parse(data)
+    } catch {
+      return []
+    }
+  }
+
+  static addFavorite(favorite: Omit<FavoritePrompt, 'id' | 'createdAt'>): FavoritePrompt {
+    if (typeof window === 'undefined') return {} as FavoritePrompt
+
+    const favorites = this.getFavorites()
+    const newFavorite: FavoritePrompt = {
+      ...favorite,
+      id: `fav_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      createdAt: Date.now(),
+    }
+
+    favorites.unshift(newFavorite)
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites))
+    return newFavorite
+  }
+
+  static removeFavorite(id: string): void {
+    if (typeof window === 'undefined') return
+    const favorites = this.getFavorites()
+    const filtered = favorites.filter(f => f.id !== id)
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(filtered))
+  }
+
+  static isFavorite(prompt: string): boolean {
+    const favorites = this.getFavorites()
+    return favorites.some(f => f.prompt === prompt)
+  }
+
+  static clearFavorites(): void {
+    if (typeof window === 'undefined') return
+    localStorage.removeItem(FAVORITES_KEY)
   }
 }

@@ -23,6 +23,27 @@ export default function VideoGenerator({
   const [error, setError] = useState('')
   const formRef = useRef<HTMLFormElement>(null)
   const promptRef = useRef<HTMLTextAreaElement>(null)
+  const [isFavorited, setIsFavorited] = useState(false)
+  const [showFavoriteName, setShowFavoriteName] = useState(false)
+  const [favoriteName, setFavoriteName] = useState('')
+
+  const handleAddFavorite = () => {
+    if (!favoriteName.trim() && !prompt.trim()) return
+
+    StorageManager.addFavorite({
+      name: favoriteName || prompt.substring(0, 30) + '...',
+      prompt,
+      duration,
+      orientation,
+      quality,
+    })
+
+    setIsFavorited(true)
+    setShowFavoriteName(false)
+    setFavoriteName('')
+
+    setTimeout(() => setIsFavorited(false), 2000)
+  }
 
   // Setup keyboard shortcuts
   useKeyboardShortcuts({
@@ -189,6 +210,48 @@ export default function VideoGenerator({
             </select>
           </div>
         </div>
+
+        {/* Favorite Button */}
+        <button
+          type="button"
+          onClick={() => setShowFavoriteName(!showFavoriteName)}
+          disabled={!prompt.trim()}
+          className="btn-secondary w-full"
+        >
+          {isFavorited ? '✓ Added to Favorites' : '★ Save as Favorite'}
+        </button>
+
+        {/* Favorite Name Input */}
+        {showFavoriteName && (
+          <div className="space-y-2 p-4 bg-slate-50 border border-slate-200 rounded-lg">
+            <label className="block text-sm font-medium text-slate-900">
+              Favorite Name
+            </label>
+            <input
+              type="text"
+              value={favoriteName}
+              onChange={(e) => setFavoriteName(e.target.value)}
+              placeholder={prompt.substring(0, 40) + '...'}
+              className="input-field"
+            />
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={handleAddFavorite}
+                className="btn-primary flex-1"
+              >
+                Save Favorite
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowFavoriteName(false)}
+                className="btn-secondary flex-1"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Error Message */}
         {error && (
