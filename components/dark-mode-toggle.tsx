@@ -1,9 +1,21 @@
 'use client'
 
 import { useTheme } from '@/lib/theme-context'
+import { useEffect, useState } from 'react'
 
 export default function DarkModeToggle() {
   const { theme, toggleTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return (
+      <div className="p-2 rounded-lg border border-slate-200 w-5 h-5" />
+    )
+  }
 
   return (
     <button
