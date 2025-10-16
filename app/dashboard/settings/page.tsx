@@ -16,9 +16,9 @@ export default function SettingsPage() {
         <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
           <h3 className="font-semibold text-blue-900 mb-2">About API Keys</h3>
           <ul className="text-sm text-blue-800 space-y-2">
-            <li>• Your API key is stored securely in your browser's local storage</li>
+            <li>• Your API key is stored securely in your browser&apos;s local storage</li>
             <li>• It is never sent to our servers or any third party</li>
-            <li>• Your key is only used to authenticate requests to OpenAI's API</li>
+            <li>• Your key is only used to authenticate requests to OpenAI&apos;s API</li>
             <li>• You can clear it anytime from this page</li>
           </ul>
         </div>
@@ -42,7 +42,7 @@ export default function SettingsPage() {
               rel="noopener noreferrer"
               className="underline hover:text-yellow-900"
             >
-              OpenAI's pricing page
+              OpenAI&apos;s pricing page
             </a>{' '}
             for the most up-to-date pricing information.
           </p>
