@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { startTransition, useEffect, useState } from 'react'
 import { StorageManager } from '@/lib/storage'
 import { isValidApiKey } from '@/lib/sora-client'
 
@@ -9,11 +9,19 @@ interface ApiKeyInputProps {
 }
 
 export default function ApiKeyInput({ onSave }: ApiKeyInputProps) {
-  const initialApiKey = typeof window !== 'undefined' ? (StorageManager.getApiKey() || '') : ''
-  const [apiKey, setApiKey] = useState(initialApiKey)
+  const [apiKey, setApiKey] = useState('')
   const [isEditing, setIsEditing] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => {
+      const stored = StorageManager.getApiKey() || ''
+      startTransition(() => setApiKey(stored))
+    })
+
+    return () => cancelAnimationFrame(raf)
+  }, [])
 
   const handleSave = () => {
     if (!apiKey.trim()) {
@@ -112,8 +120,8 @@ export default function ApiKeyInput({ onSave }: ApiKeyInputProps) {
               onClick={() => {
                 setIsEditing(false)
                 setError('')
-                const stored = StorageManager.getApiKey()
-                if (stored) setApiKey(stored)
+                const stored = StorageManager.getApiKey() || ''
+                setApiKey(stored)
               }}
               className="btn-secondary"
             >

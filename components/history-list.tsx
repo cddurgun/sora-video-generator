@@ -1,20 +1,28 @@
 'use client'
 
-import { } from 'react'
-import { StorageManager, GenerationRecord } from '@/lib/storage'
+import { startTransition, useEffect, useState } from 'react'
+import { StorageManager } from '@/lib/storage'
 
 interface HistoryListProps {
   limit?: number
 }
 
 export default function HistoryList({ limit = 10 }: HistoryListProps) {
-  const isClient = typeof window !== 'undefined'
+  const [isMounted, setIsMounted] = useState(false)
 
-  const history = isClient ? StorageManager.getGenerationHistory().slice(0, limit) : []
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => {
+      startTransition(() => setIsMounted(true))
+    })
 
-  if (!isClient) {
+    return () => cancelAnimationFrame(raf)
+  }, [])
+
+  if (!isMounted) {
     return <div className="text-center py-8 text-neutral-500">Loading history...</div>
   }
+
+  const history = StorageManager.getGenerationHistory().slice(0, limit)
 
   if (history.length === 0) {
     return (

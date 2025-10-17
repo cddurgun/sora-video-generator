@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { startTransition, useEffect, useState } from 'react'
 import { StorageManager } from '@/lib/storage'
 
 export interface UserPreferences {
@@ -42,11 +42,21 @@ export function saveUserPreferences(prefs: UserPreferences) {
 }
 
 export default function EnhancedSettings() {
-  const [prefs, setPrefs] = useState<UserPreferences>(
-    typeof window !== 'undefined' ? getUserPreferences() : DEFAULT_PREFERENCES
-  )
-  const [loading] = useState(false)
+  const [prefs, setPrefs] = useState<UserPreferences>(DEFAULT_PREFERENCES)
+  const [isMounted, setIsMounted] = useState(false)
   const [saved, setSaved] = useState(false)
+
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => {
+      const preferences = getUserPreferences()
+      startTransition(() => {
+        setPrefs(preferences)
+        setIsMounted(true)
+      })
+    })
+
+    return () => cancelAnimationFrame(raf)
+  }, [])
 
   const handleChange = (key: keyof UserPreferences, value: any) => {
     const updated = { ...prefs, [key]: value }
@@ -73,7 +83,7 @@ export default function EnhancedSettings() {
     }
   }
 
-  if (loading) {
+  if (!isMounted) {
     return <div className="text-center py-4 text-neutral-500">Loading preferences...</div>
   }
 

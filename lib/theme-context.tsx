@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, useCallback } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback, startTransition } from 'react'
 
 type Theme = 'light' | 'dark'
 
@@ -12,13 +12,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === 'undefined') return 'light'
-    const stored = localStorage.getItem('sora_theme') as Theme | null
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    return stored || (prefersDark ? 'dark' : 'light')
-  })
-  // Avoid extra mounted state to satisfy React Compiler rules
+  const [theme, setTheme] = useState<Theme>('light')
 
   const applyTheme = useCallback((newTheme: Theme) => {
     const root = document.documentElement
@@ -32,8 +26,24 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('sora_theme', newTheme)
   }, [])
 
-  // Apply theme on mount
   useEffect(() => {
+    if (typeof window === 'undefined') return
+    const stored = localStorage.getItem('sora_theme') as Theme | null
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const initialTheme = stored || (prefersDark ? 'dark' : 'light')
+
+    const raf = requestAnimationFrame(() => {
+      startTransition(() => {
+        setTheme((current) => (current === initialTheme ? current : initialTheme))
+      })
+    })
+
+    return () => cancelAnimationFrame(raf)
+  }, [])
+
+  // Apply theme whenever it changes
+  useEffect(() => {
+    if (typeof window === 'undefined') return
     applyTheme(theme)
   }, [applyTheme, theme])
 

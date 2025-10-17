@@ -1,6 +1,6 @@
 'use client'
 
-import { } from 'react'
+import { startTransition, useEffect, useState } from 'react'
 import { StorageManager } from '@/lib/storage'
 
 interface AnalyticsData {
@@ -33,64 +33,73 @@ function computeAnalytics(): AnalyticsData | null {
   const history = StorageManager.getGenerationHistory()
   const favorites = StorageManager.getFavorites()
 
-    if (history.length === 0) {
-      return {
-        totalGenerated: 0,
-        successfulGenerations: 0,
-        failedGenerations: 0,
-        successRate: 0,
-        totalFavorites: favorites.length,
-        averageGenerationTime: 0,
-        mostUsedDuration: 5,
-        mostUsedQuality: 'standard',
-        mostUsedOrientation: 'landscape',
-      }
+  if (history.length === 0) {
+    return {
+      totalGenerated: 0,
+      successfulGenerations: 0,
+      failedGenerations: 0,
+      successRate: 0,
+      totalFavorites: favorites.length,
+      averageGenerationTime: 0,
+      mostUsedDuration: 5,
+      mostUsedQuality: 'standard',
+      mostUsedOrientation: 'landscape',
     }
+  }
 
-    const successful = history.filter((h) => h.status === 'completed').length
-    const failed = history.filter((h) => h.status === 'failed').length
+  const successful = history.filter((h) => h.status === 'completed').length
+  const failed = history.filter((h) => h.status === 'failed').length
 
-    const completedItems = history.filter((h) => h.status === 'completed' && h.completedAt)
-    const totalTime = completedItems.reduce((sum, item) => {
-      if (item.completedAt) {
-        return sum + (item.completedAt - item.createdAt) / 1000
-      }
-      return sum
-    }, 0)
-    const avgTime = completedItems.length > 0 ? Math.round(totalTime / completedItems.length) : 0
-
-    const durations = history.map((h) => h.duration || 5) as (5 | 10 | 20)[]
-    const qualities = history.map((h) => h.quality || 'standard') as ('standard' | 'high')[]
-    const orientations = history.map((h) => h.orientation || 'landscape') as ('landscape' | 'portrait' | 'square')[]
-
-    const mostFrequent = <T,>(arr: T[]): T => {
-      const freq: Record<string, number> = {}
-      for (const item of arr) {
-        freq[String(item)] = (freq[String(item)] || 0) + 1
-      }
-      return Object.entries(freq).sort(([, a], [, b]) => b - a)[0][0] as T
+  const completedItems = history.filter((h) => h.status === 'completed' && h.completedAt)
+  const totalTime = completedItems.reduce((sum, item) => {
+    if (item.completedAt) {
+      return sum + (item.completedAt - item.createdAt) / 1000
     }
+    return sum
+  }, 0)
+  const avgTime = completedItems.length > 0 ? Math.round(totalTime / completedItems.length) : 0
+
+  const durations = history.map((h) => h.duration || 5) as (5 | 10 | 20)[]
+  const qualities = history.map((h) => h.quality || 'standard') as ('standard' | 'high')[]
+  const orientations = history.map((h) => h.orientation || 'landscape') as ('landscape' | 'portrait' | 'square')[]
+
+  const mostFrequent = <T,>(arr: T[]): T => {
+    const freq: Record<string, number> = {}
+    for (const item of arr) {
+      freq[String(item)] = (freq[String(item)] || 0) + 1
+    }
+    return Object.entries(freq).sort(([, a], [, b]) => b - a)[0][0] as T
+  }
 
   return {
-      totalGenerated: history.length,
-      successfulGenerations: successful,
-      failedGenerations: failed,
-      successRate: Math.round((successful / history.length) * 100),
-      totalFavorites: favorites.length,
-      averageGenerationTime: avgTime,
-      mostUsedDuration: mostFrequent(durations),
-      mostUsedQuality: mostFrequent(qualities),
-      mostUsedOrientation: mostFrequent(orientations),
+    totalGenerated: history.length,
+    successfulGenerations: successful,
+    failedGenerations: failed,
+    successRate: Math.round((successful / history.length) * 100),
+    totalFavorites: favorites.length,
+    averageGenerationTime: avgTime,
+    mostUsedDuration: mostFrequent(durations),
+    mostUsedQuality: mostFrequent(qualities),
+    mostUsedOrientation: mostFrequent(orientations),
   }
 }
 
 export default function AnalyticsDashboard() {
-  const isClient = typeof window !== 'undefined'
-  const analytics = computeAnalytics()
+  const [isMounted, setIsMounted] = useState(false)
 
-  if (!isClient) {
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => {
+      startTransition(() => setIsMounted(true))
+    })
+
+    return () => cancelAnimationFrame(raf)
+  }, [])
+
+  if (!isMounted) {
     return <div className="text-center py-8 text-neutral-500">Loading analytics...</div>
   }
+
+  const analytics = computeAnalytics()
 
   if (!analytics || analytics.totalGenerated === 0) {
     return (

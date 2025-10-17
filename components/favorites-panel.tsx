@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { startTransition, useEffect, useState } from 'react'
 import { StorageManager, FavoritePrompt } from '@/lib/storage'
 
 interface FavoritesPanelProps {
@@ -8,17 +8,25 @@ interface FavoritesPanelProps {
 }
 
 export default function FavoritesPanel({ onSelectFavorite }: FavoritesPanelProps) {
-  const isClient = typeof window !== 'undefined'
+  const [isMounted, setIsMounted] = useState(false)
   const [revision, setRevision] = useState(0)
 
-  const favorites = isClient ? StorageManager.getFavorites() : []
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => {
+      startTransition(() => setIsMounted(true))
+    })
+
+    return () => cancelAnimationFrame(raf)
+  }, [])
+
+  const favorites = isMounted ? StorageManager.getFavorites() : []
 
   const handleRemove = (id: string) => {
     StorageManager.removeFavorite(id)
     setRevision((prev) => prev + 1)
   }
 
-  if (!isClient) {
+  if (!isMounted) {
     return <div className="text-center py-4 text-neutral-500">Loading favorites...</div>
   }
 
